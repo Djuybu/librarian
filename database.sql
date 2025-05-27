@@ -5,7 +5,7 @@ CREATE TABLE book (
     id INT AUTO_INCREMENT PRIMARY KEY ,
     book_name VARCHAR(90),
     author VARCHAR(60),
-    description TEXT,  -- Sửa lỗi chính tả: "descirption" ➝ "description"
+    description TEXT,
     num_of_copies INT,
     date_created DATETIME DEFAULT NOW()
 );

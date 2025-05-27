@@ -8,12 +8,19 @@ import { useForm } from "react-hook-form";
 const AddBook = () => {
     const {id} = useParams();
     const [bookDetails, setBookDetails] = React.useState(null);
+    const { register, handleSubmit, reset } = useForm({
+    defaultValues: {
+        book_name: "",
+        author: "",
+        num_of_copies: "",
+        description: ""
+    }
+    });
+
     useEffect(() => {
         const fetchBookDetails = async () => {
-            if (!id) {
-                console.error("No book ID provided for fetching details");
-                return;
-            }
+            if (!id) return;
+
             try {
                 const response = await axiosFetch({
                     url: `books/${id}`,
@@ -21,40 +28,33 @@ const AddBook = () => {
                 });
                 if (response.status === 200 || response.status === 201) {
                     setBookDetails(response.data);
-                } else {
-                    console.error("Failed to fetch book details:", response.data);
+                    reset(response.data); // 🔄 cập nhật form với dữ liệu mới
                 }
             } catch (error) {
                 console.error("Failed to fetch book details:", error);
             }
         };
-        fetchBookDetails();
-    }, [id]);
 
-    const { register, handleSubmit } = useForm();
+        fetchBookDetails();
+    }, [id, reset]);
+
     const onSubmit = async (data) => {
-        console.log(data);
         try {
             const response = await axiosFetch({
                 url: id ? `books/${id}` : 'books',
                 method: id ? 'PUT' : 'POST',
-                data: {
-                    book_name: data.book_name,
-                    author: data.author,
-                    num_of_copies: data.num_of_copies,
-                    description: data.description,
-                },
+                data,
             });
             if (response.status === 201 || response.status === 200) {
-                // Redirect or update state to reflect the changes
                 window.location.href = `/`;
             } else {
-                console.error("Failed to update book:", response.data);
+                console.error("Failed to save book:", response.data);
             }
         } catch (error) {
-            console.error("Error updating book:", error);
+            console.error("Error saving book:", error);
         }
     };
+
 
     return (
     <>
